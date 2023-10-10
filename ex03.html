@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>김민혜의 Homewor</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      text-align: center;
+    }
+
+    ul, ol, li {
+      list-style: none;
+    }
+
+    a:link {
+      color: black;
+      text-decoration: none;
+    }
+    
+    .header ul::after {
+      content: "";
+      display: block;
+      clear: left;
+    }
+
+    .header ul li {
+      float: left;
+    }
+
+    .header ul li a {
+      display: block;
+      border: 2px solid black;
+      padding: 0 30px;
+      line-height: 34px;
+      margin-right: 10px;
+    }
+
+    .main-card button {
+      position: relative;
+      left: -45px;
+      bottom: 15px;
+    }
+
+    .favorites {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .favorites img {
+      width: 150px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="food-li-insert"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <script type="text/babel">
+    const jsonLocalStorage = {
+      setItem: (key, value) => {
+        localStorage.setItem(key, JSON.stringify(value));
+      },
+      getItem: (key) => {
+        return JSON.parse(localStorage.getItem(key));
+      },
+    };
+
+    function Title() {
+      return <h1>김민혜의 Homework(메뉴소개 페이지)</h1>
+    };
+
+    const Form = () => {
+      return (
+        <div class="header">
+      <ul>
+        <li><a href="#">메인메뉴</a></li>
+        <li><a href="#">세트메뉴</a></li>
+        <li><a href="#">사이드</a></li>
+        <li><a href="#">음료/주류</a></li>
+      </ul>
+    </div>
+      );
+    };
+
+    /// component
+    const MainCard = ({ src, handleHeartClick, choiceFavorites }) => {
+      const heartIcon = choiceFavorites ? '💖' : '🤍';
+      return (
+        <div className="main-card">
+          <img
+            src={src}
+            alt="올리브 오일"
+            width="400px"
+            style={{ border: "1px solid hotpink" }}
+          />
+          <button onClick={handleHeartClick}>{heartIcon}</button>
+        </div>
+      );
+    };
+
+    const FoodItem = ({ src }) => {
+      return (
+        <li>
+          <img
+            src={src}
+            alt="음식"
+            style={{
+              width: "150px",
+              height: "100px",
+              backgroundSize: "contain",
+            }}
+          />
+        </li>
+      );
+    }
+
+    /// componenet
+    const Favorites = ({ favorites }) => {
+      return (
+        <ul className="favorites">
+          {favorites.map((food, idx) => <FoodItem src={food} key={idx} />)}
+        </ul>
+      );
+    }
+
+    const App = () => {
+      // [상태] -----------------------------
+      const foodOne = 'img/food-one.png';
+      const foodTwo = 'img/food-two.png';
+      const foodThree = 'img/food-three.png';
+      const foodFour = 'img/food-four.png';
+      const foodFive = 'img/food-five.png';
+      const [mainFood, setMainFood] = React.useState(foodOne);
+      const [favorites, setFavorites] = React.useState(() => {
+        return (jsonLocalStorage.getItem('favorites') || []);
+      });
+      const [counter, setCounter] = React.useState(() => {
+        return jsonLocalStorage.getItem('counter')
+    });
+      
+      const choiceFavorites = favorites.includes(mainFood);
+
+      function updateCounter(event) {
+        setCounter((pre) => {
+          const nextCounter = pre + 1;
+          jsonLocalStorage.setItem('counter', nextCounter);
+          return nextCounter;
+        });
+        setMainFood(foodTwo);
+      }
+      
+      function handleHeartClick() {
+        setFavorites((pre) => {
+          const nextFavorites = [...pre, mainFood]
+          jsonLocalStorage.setItem('favorites', nextFavorites);
+          return nextFavorites;
+        });
+      }
+
+      return (
+        <div>
+          <Title>페이지 {counter}</Title>
+          <Form updateCounter={updateCounter} />
+          <MainCard
+          src={mainFood}
+          handleHeartClick={handleHeartClick}
+          choiceFavorites={choiceFavorites}
+          />
+          <Favorites favorites={favorites} />
+        </div>
+      );
+    };
+
+    // 리액트 엘리먼트가 추가 될 위치
+    const foodListInsert = document.querySelector('#food-li-insert');
+
+    // 리액트를 이용하여 엘리먼트 추가
+    ReactDOM.createRoot(foodListInsert).render(<App />);
+
+  </script>
+</body>
+
+</html>

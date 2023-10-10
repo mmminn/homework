@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>김민혜의 Homework</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      text-align: center;
+    }
+
+    ul,
+    ol,
+    li {
+      list-style: none;
+    }
+
+    a:link {
+      color: black;
+      text-decoration: none;
+    }
+
+    .header ul::after {
+      content: "";
+      display: block;
+      clear: left;
+    }
+
+    .header ul li {
+      float: left;
+    }
+
+    .header ul li a {
+      display: block;
+      border: 2px solid black;
+      padding: 0 30px;
+      line-height: 34px;
+      margin-right: 10px;
+    }
+
+    .menu {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .menu img {
+      width: 100px;
+      height: 100px;
+    }
+
+    .menu button {
+      position: relative;
+      left: -35px;
+      bottom: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="food-li-insert"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+
+  <script type="text/babel">
+    const jsonLocalStorage = {
+      setItem: (key, value) => {
+        console.log('setItem 실행됨...');
+        localStorage.setItem(key, JSON.stringify(value));
+      },
+      getItem: (key) => {
+        console.log('getItem 실행됨...');
+        return JSON.parse(localStorage.getItem(key));
+      },
+    };
+
+    const Header = () => {
+      return (
+        <div className="header">
+          <h1>김민혜의 Homework</h1>
+          <ul>
+            <li><a href="#">메인메뉴</a></li>
+            <li><a href="#">세트메뉴</a></li>
+            <li><a href="#">사이드</a></li>
+            <li><a href="#">음료/주류</a></li>
+          </ul>
+        </div>
+      );
+    };
+
+    const MainCard = () => {
+      return (
+        <div className="main-card">
+          <img
+            src="img/food-one.png"
+            alt="메인 햄버거"
+            width="200px"
+            style={{ border: "2px solid hotpink" }}
+          />
+        </div>
+      );
+    };
+
+    const Menu = ({ src, buttondClick }) => {
+      return (
+        <ul className="menu">
+          <li>
+            <img src={"img/food-two.png"} alt="버거" />
+            <button onClick={buttondClick}>담기</button>
+          </li>
+          <li>
+            <img src="img/food-three.png" alt="버거" />
+            <button onClick={buttondClick}>담기</button>
+          </li>
+          <li>
+            <img src="img/food-four.png" alt="버거" />
+            <button onClick={buttondClick}>담기</button>
+          </li>
+          <li>
+            <img src="img/food-five.png" alt="버거" />
+            <button onClick={buttondClick}>담기</button>
+          </li>
+        </ul>
+      );
+    };
+
+    const FoodItem = ({ src }) => {
+      return (
+        <li>
+          <img
+            src={src}
+            alt="사이드"
+            style={{
+              width: "100px",
+              height: "100px",
+              backgroundSize: "contain",
+            }}
+          />
+        </li>
+      )
+    }
+
+    const Cart = ({ cart }) => {
+      return (
+        <ul className="cart">
+          {cart.map((food, idx) => <FoodItem src={food} key={idx} />)}
+        </ul>
+      )
+    }
+
+    const Homework = () => {
+      const foodOne = 'img/food-one.png';
+      const foodTwo = 'img/food-two.png';
+      const foodThree = 'img/food-three.png';
+      const foodFour = 'img/food-four.png';
+      const foodFive = 'img/food-five.png';
+      const [mainFood, setMainFood] = React.useState(foodOne);
+      const [cart, setCart] = React.useState(() => {
+        return (jsonLocalStorage.getItem('cart') || [])
+      });
+
+      function buttonClick() {
+        setCart((pre) => {
+          const nextCart = [...pre, mainFood];
+          jsonLocalStorage.setItem('cart', nextCart);
+          return nextCart;
+        });
+
+      }
+
+      return (
+        <div>
+          <Header />
+          <MainCard />
+          <Menu
+          src={mainFood}
+          buttonClick={buttonClick} 
+          />
+          <Cart cart={cart} />
+        </div>
+      );
+    };
+
+    const foodListInsert = document.querySelector('#food-li-insert');
+
+    ReactDOM.createRoot(foodListInsert).render(<Homework />);
+
+  </script>
+</body>
+
+</html>
